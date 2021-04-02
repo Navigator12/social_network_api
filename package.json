@@ -1,0 +1,27 @@
+{
+  "name": "social_network_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Navigator12/social_network_api.git"
+  },
+  "author": "Michel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Navigator12/social_network_api/issues"
+  },
+  "homepage": "https://github.com/Navigator12/social_network_api#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.23.0"
+  }
+}
