@@ -6,11 +6,16 @@ const { PORT, MONGO } = process.env
 
 const app = express()
 
+app.use(express.json({ extended: true }));
+
+app.use('/api/authorization', require('./routes/Authorization'))
+
 const startDB = async () => {
   try {
     await mongoose.connect(MONGO, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useCreateIndex: true,
     })
   } catch (e) {
     console.error('DATABASE ERROR')
@@ -19,6 +24,6 @@ const startDB = async () => {
 }
 
 startDB().then(() => {
-  console.log("Successfully connected to DB")
+  console.log('Successfully connected to DB')
   app.listen(PORT, () => console.log(`App has been started on port ${PORT}`))
 })
