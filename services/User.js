@@ -4,6 +4,40 @@ const User = require('../models/User')
 const { getToken } = require('../utils/Token')
 
 const UserService = {
+  getAllUsers: async () => {
+    const filters = {
+      posts: 0,
+      password: 0,
+      __v: 0,
+    }
+
+    const users = await User.find({}, filters)
+
+    return users
+  },
+
+  getUserById: async (payload) => {
+    const id = payload
+
+    const filters = {
+      password: 0,
+      __v: 0,
+    }
+
+    const population = {
+      path: 'posts',
+      select: '-__v -author',
+      populate: {
+        path: 'comments',
+        select: '-__v',
+      },
+    }
+
+    const user = await User.findById(id, filters).populate(population)
+
+    return user
+  },
+
   create: async (payload) => {
     const { nickname, password } = payload
 
