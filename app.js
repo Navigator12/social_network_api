@@ -8,7 +8,8 @@ const app = express()
 
 app.use(express.json({ extended: true }));
 
-app.use('/api/authorization', require('./routes/Authorization'))
+app.use('/api/users', require('./routes/User'))
+app.use('/api/posts', require('./routes/Post'))
 
 const startDB = async () => {
   try {
