@@ -6,6 +6,7 @@ const AttachUser = require('../utils/Authorization')
 const router = Router()
 
 router.post('/send', AttachUser, FriendRequestController.send)
+router.post('/resolve', AttachUser, FriendRequestController.resolve)
 router.get('/pending/:id', FriendRequestController.pending)
 router.get('/sent/:id', FriendRequestController.sent)
 

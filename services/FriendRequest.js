@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const FriendRequest = require('../models/FriendRequest')
+const FriendRelation = require('../models/FriendRelation')
 
 const FriendRequestService = {
   send: async (payload) => {
@@ -21,6 +22,26 @@ const FriendRequestService = {
     })
 
     await request.save()
+  },
+
+  resolve: async (payload) => {
+    const { requestId, userId, accept } = payload
+
+    const request = await FriendRequest.findOneAndDelete({
+      _id: requestId,
+      to: userId,
+    })
+
+    if (request && accept) {
+      const relation = new FriendRelation({
+        user1: request.from,
+        user2: request.to,
+      })
+
+      await relation.save()
+    }
+
+    return request
   },
 
   pending: async (payload) => {

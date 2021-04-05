@@ -9,7 +9,30 @@ const FriendRequestController = {
       await FriendRequestService.send({ from, to })
 
       return res.status(201).json({
-        message: 'Request sent successfully',
+        message: 'Friend request sent successfully',
+      })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
+  resolve: async (req, res) => {
+    try {
+      const { userId } = req.user
+      const { requestId, accept } = req.body
+
+      const request = await FriendRequestService.resolve({ requestId, userId, accept })
+
+      if (!request) {
+        return res.status(404).json({
+          message: 'Friend request does not exist',
+        })
+      }
+
+      return res.status(201).json({
+        message: 'Friend request successfully resolved',
       })
     } catch (e) {
       return res.status(400).json({
