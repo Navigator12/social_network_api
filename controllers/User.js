@@ -37,6 +37,22 @@ const UserController = {
     }
   },
 
+  friends: async (req, res) => {
+    try {
+      const { id } = req.params
+
+      const friends = await UserService.getFriends(id)
+
+      return res.status(200).json({
+        friends,
+      })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
   register: async (req, res) => {
     try {
       await UserService.create(req.body)

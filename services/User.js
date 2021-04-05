@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 
 const User = require('../models/User')
+const FriendRelation = require('../models/FriendRelation')
 const { getToken } = require('../utils/Token')
 
 const UserService = {
@@ -36,6 +37,32 @@ const UserService = {
     const user = await User.findById(id, format).populate(population)
 
     return user
+  },
+
+  getFriends: async (payload) => {
+    const id = payload
+
+    const select = '-__v -password -posts'
+
+    const relations = await FriendRelation.find({
+      $or: [
+        { user1: id },
+        { user2: id },
+      ],
+    }).populate({
+      path: 'user1',
+      select,
+    }).populate({
+      path: 'user2',
+      select,
+    })
+
+    const friends = relations.map((relation) => ({
+      friend: relation.user1._id.toString() === id ? relation.user2 : relation.user1,
+      date: relation.date,
+    }))
+
+    return friends
   },
 
   create: async (payload) => {

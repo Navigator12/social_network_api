@@ -4,11 +4,13 @@ const friendRelationSchema = new Schema({
   user1: {
     type: Types.ObjectId,
     required: true,
+    ref: 'User',
   },
 
   user2: {
     type: Types.ObjectId,
     required: true,
+    ref: 'User',
   },
 
   date: {
