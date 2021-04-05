@@ -5,13 +5,13 @@ const { getToken } = require('../utils/Token')
 
 const UserService = {
   getAllUsers: async () => {
-    const filters = {
+    const format = {
       posts: 0,
       password: 0,
       __v: 0,
     }
 
-    const users = await User.find({}, filters)
+    const users = await User.find({}, format)
 
     return users
   },
@@ -19,7 +19,7 @@ const UserService = {
   getUserById: async (payload) => {
     const id = payload
 
-    const filters = {
+    const format = {
       password: 0,
       __v: 0,
     }
@@ -33,7 +33,7 @@ const UserService = {
       },
     }
 
-    const user = await User.findById(id, filters).populate(population)
+    const user = await User.findById(id, format).populate(population)
 
     return user
   },

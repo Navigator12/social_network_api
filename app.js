@@ -10,6 +10,7 @@ app.use(express.json({ extended: true }));
 
 app.use('/api/users', require('./routes/User'))
 app.use('/api/posts', require('./routes/Post'))
+app.use('/api/friend_request', require('./routes/FriendRequest'))
 
 const startDB = async () => {
   try {
