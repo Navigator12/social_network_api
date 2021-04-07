@@ -15,6 +15,22 @@ const UserController = {
     }
   },
 
+  me: async (req, res) => {
+    try {
+      const { userId } = req.user
+
+      const user = await UserService.getUserById(userId)
+
+      return res.status(200).json({
+        user,
+      })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
   show: async (req, res) => {
     try {
       const { id } = req.params

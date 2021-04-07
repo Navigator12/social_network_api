@@ -1,8 +1,46 @@
 const User = require('../models/User')
 const Post = require('../models/Post')
 const Comment = require('../models/Comment')
+const FriendRelation = require('../models/FriendRelation')
 
 const PostService = {
+  news: async (payload) => {
+    const id = payload
+
+    const friends = await FriendRelation
+      .find({
+        from: id,
+      })
+      .select('to')
+      .populate({
+        path: 'to',
+        select: '_id',
+      }).lean()
+      .map((relations) => relations.map((rel) => rel.to._id))
+
+    const posts = await Post
+      .find({
+        author: {
+          $in: friends,
+        },
+      })
+      .select('-__v')
+      .populate({
+        path: 'author',
+        select: 'nickname -_id',
+      })
+      .populate({
+        path: 'comments',
+        select: '-__v -post',
+        populate: {
+          path: 'author',
+          select: 'nickname -_id',
+        },
+      })
+
+    return posts
+  },
+
   create: async (payload) => {
     const { text, author } = payload
 

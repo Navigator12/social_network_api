@@ -1,6 +1,22 @@
 const PostService = require('../services/Post')
 
 const PostController = {
+  news: async (req, res) => {
+    try {
+      const { userId } = req.user
+
+      const news = await PostService.news(userId)
+
+      return res.status(201).json({
+        news,
+      })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
   create: async (req, res) => {
     try {
       const { userId } = req.user

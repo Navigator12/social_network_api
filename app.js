@@ -1,12 +1,14 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 require('dotenv').config()
 
 const { PORT, MONGO } = process.env
 
 const app = express()
 
-app.use(express.json({ extended: true }));
+app.use(express.json({ extended: true }))
+app.use(cors())
 
 app.use('/api/users', require('./routes/User'))
 app.use('/api/posts', require('./routes/Post'))

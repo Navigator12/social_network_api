@@ -33,12 +33,18 @@ const FriendRequestService = {
     })
 
     if (request && accept) {
-      const relation = new FriendRelation({
-        user1: request.from,
-        user2: request.to,
+      const relation1 = new FriendRelation({
+        from: request.from,
+        to: request.to,
       })
 
-      await relation.save()
+      const relation2 = new FriendRelation({
+        from: request.to,
+        to: request.from,
+      })
+
+      await relation1.save()
+      await relation2.save()
     }
 
     return request

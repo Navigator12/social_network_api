@@ -42,25 +42,23 @@ const UserService = {
   getFriends: async (payload) => {
     const id = payload
 
-    const select = '-__v -password -posts'
+    const selectRelation = 'to date'
+    const selectUser = '_id nickname'
 
-    const relations = await FriendRelation.find({
-      $or: [
-        { user1: id },
-        { user2: id },
-      ],
-    }).populate({
-      path: 'user1',
-      select,
-    }).populate({
-      path: 'user2',
-      select,
-    })
-
-    const friends = relations.map((relation) => ({
-      friend: relation.user1._id.toString() === id ? relation.user2 : relation.user1,
-      date: relation.date,
-    }))
+    const friends = await FriendRelation
+      .find({
+        from: id,
+      })
+      .select(selectRelation)
+      .populate({
+        path: 'to',
+        select: selectUser,
+      })
+      .map((relations) => relations.map((rel) => ({
+        _id: rel.to._id,
+        nickname: rel.to.nickname,
+        date: rel.date,
+      })))
 
     return friends
   },

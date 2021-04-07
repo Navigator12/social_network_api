@@ -1,13 +1,13 @@
 const { Schema, model, Types } = require('mongoose')
 
 const friendRelationSchema = new Schema({
-  user1: {
+  from: {
     type: Types.ObjectId,
     required: true,
     ref: 'User',
   },
 
-  user2: {
+  to: {
     type: Types.ObjectId,
     required: true,
     ref: 'User',
@@ -20,8 +20,8 @@ const friendRelationSchema = new Schema({
 })
 
 friendRelationSchema.index({
-  user1: 1,
-  user2: 1,
+  from: 1,
+  to: 1,
 }, {
   unique: true,
 })
