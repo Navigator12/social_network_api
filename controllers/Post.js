@@ -4,8 +4,13 @@ const PostController = {
   news: async (req, res) => {
     try {
       const { userId } = req.user
+      const { limit, offset } = req.query
 
-      const news = await PostService.news(userId)
+      const news = await PostService.news({
+        userId,
+        limit: Number.parseInt(limit, 10),
+        offset: Number.parseInt(offset, 10),
+      })
 
       return res.status(201).json({
         news,
@@ -22,10 +27,10 @@ const PostController = {
       const { userId } = req.user
       const { text } = req.body
 
-      await PostService.create({ text, author: userId })
+      const post = await PostService.create({ text, author: userId })
 
       return res.status(201).json({
-        message: 'Post successfully created',
+        post,
       })
     } catch (e) {
       return res.status(400).json({
@@ -39,10 +44,10 @@ const PostController = {
       const { userId } = req.user
       const { postId, text } = req.body
 
-      await PostService.comment({ postId, text, author: userId })
+      const post = await PostService.comment({ postId, text, author: userId })
 
       return res.status(201).json({
-        message: 'Post successfully commented',
+        post,
       })
     } catch (e) {
       return res.status(400).json({

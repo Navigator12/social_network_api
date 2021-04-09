@@ -5,11 +5,11 @@ const FriendRelation = require('../models/FriendRelation')
 
 const PostService = {
   news: async (payload) => {
-    const id = payload
+    const { userId, limit, offset } = payload
 
     const friends = await FriendRelation
       .find({
-        from: id,
+        from: userId,
       })
       .select('to')
       .populate({
@@ -21,20 +21,22 @@ const PostService = {
     const posts = await Post
       .find({
         author: {
-          $in: friends,
+          $in: [...friends, userId],
         },
-      })
+      }, null, { sort: '-date' })
       .select('-__v')
+      .skip(offset)
+      .limit(limit)
       .populate({
         path: 'author',
-        select: 'nickname -_id',
+        select: 'nickname',
       })
       .populate({
         path: 'comments',
         select: '-__v -post',
         populate: {
           path: 'author',
-          select: 'nickname -_id',
+          select: 'nickname',
         },
       })
 
@@ -55,6 +57,11 @@ const PostService = {
 
     await post.save()
     await user.save()
+
+    return post.populate({
+      path: 'author',
+      select: 'nickname',
+    }).execPopulate()
   },
 
   comment: async (payload) => {
@@ -70,10 +77,27 @@ const PostService = {
       post: postId,
     })
 
-    post.comments.push(comment)
+    post.comments.push(comment._id)
 
     await comment.save()
     await post.save()
+
+    await post
+      .populate({
+        path: 'author',
+        select: 'nickname',
+      })
+      .populate({
+        path: 'comments',
+        select: '-__v -post',
+        populate: {
+          path: 'author',
+          select: 'nickname',
+        },
+      })
+      .execPopulate()
+
+    return post
   },
 }
 

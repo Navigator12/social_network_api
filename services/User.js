@@ -23,6 +23,20 @@ const UserService = {
     const format = {
       password: 0,
       __v: 0,
+      posts: 0,
+    }
+
+    const user = await User.findById(id, format)
+
+    return user
+  },
+
+  getUserByIdWithPosts: async (payload) => {
+    const id = payload
+
+    const format = {
+      password: 0,
+      __v: 0,
     }
 
     const population = {

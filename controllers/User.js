@@ -35,7 +35,7 @@ const UserController = {
     try {
       const { id } = req.params
 
-      const user = await UserService.getUserById(id)
+      const user = await UserService.getUserByIdWithPosts(id)
 
       if (!user) {
         return res.status(404).json({
