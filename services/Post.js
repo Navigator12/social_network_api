@@ -33,7 +33,7 @@ const PostService = {
       })
       .populate({
         path: 'comments',
-        select: '-__v -post',
+        select: '_id text author date',
         populate: {
           path: 'author',
           select: 'nickname',
@@ -51,23 +51,29 @@ const PostService = {
       author,
     })
 
-    const user = await User.findById(author)
+    const user = await User
+      .findById(author)
 
     user.posts.push(post._id)
 
     await post.save()
     await user.save()
 
-    return post.populate({
-      path: 'author',
-      select: 'nickname',
-    }).execPopulate()
+    await post
+      .populate({
+        path: 'author',
+        select: 'nickname',
+      })
+      .execPopulate()
+
+    return post
   },
 
   comment: async (payload) => {
     const { postId, text, author } = payload
 
-    const post = await Post.findById(postId)
+    const post = await Post
+      .findById(postId)
 
     if (!post) throw new Error('Post does not exist')
 
@@ -89,7 +95,7 @@ const PostService = {
       })
       .populate({
         path: 'comments',
-        select: '-__v -post',
+        select: '_id text author date',
         populate: {
           path: 'author',
           select: 'nickname',

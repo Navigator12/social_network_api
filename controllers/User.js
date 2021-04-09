@@ -3,7 +3,12 @@ const UserService = require('../services/User')
 const UserController = {
   index: async (req, res) => {
     try {
-      const users = await UserService.getAllUsers()
+      const { limit, offset } = req.query
+
+      const users = await UserService.getAllUsers({
+        limit: Number.parseInt(limit, 10),
+        offset: Number.parseInt(offset, 10),
+      })
 
       return res.status(200).json({
         users,

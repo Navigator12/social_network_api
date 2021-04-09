@@ -7,6 +7,7 @@ const router = Router()
 
 router.post('/send', AttachUser, FriendRequestController.send)
 router.post('/resolve', AttachUser, FriendRequestController.resolve)
+router.post('/cancel', AttachUser, FriendRequestController.cancel)
 router.get('/pending/:id', FriendRequestController.pending)
 router.get('/sent/:id', FriendRequestController.sent)
 

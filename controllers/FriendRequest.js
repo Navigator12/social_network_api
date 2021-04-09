@@ -6,10 +6,10 @@ const FriendRequestController = {
       const from = req.user.userId
       const { to } = req.body
 
-      await FriendRequestService.send({ from, to })
+      const request = await FriendRequestService.send({ from, to })
 
       return res.status(201).json({
-        message: 'Friend request sent successfully',
+        request,
       })
     } catch (e) {
       return res.status(400).json({
@@ -23,16 +23,28 @@ const FriendRequestController = {
       const { userId } = req.user
       const { requestId, accept } = req.body
 
-      const request = await FriendRequestService.resolve({ requestId, userId, accept })
-
-      if (!request) {
-        return res.status(404).json({
-          message: 'Friend request does not exist',
-        })
-      }
+      const { status, friend } = await FriendRequestService.resolve({ requestId, userId, accept })
 
       return res.status(201).json({
-        message: 'Friend request successfully resolved',
+        status,
+        friend,
+      })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
+  cancel: async (req, res) => {
+    try {
+      const { userId } = req.user
+      const { requestId } = req.body
+
+      await FriendRequestService.cancel({ requestId, userId })
+
+      return res.status(201).json({
+        requestId,
       })
     } catch (e) {
       return res.status(400).json({
@@ -44,8 +56,13 @@ const FriendRequestController = {
   pending: async (req, res) => {
     try {
       const userId = req.params.id
+      const { limit, offset } = req.query
 
-      const pendingRequests = await FriendRequestService.pending(userId)
+      const pendingRequests = await FriendRequestService.pending({
+        userId,
+        limit: Number.parseInt(limit, 10),
+        offset: Number.parseInt(offset, 10),
+      })
 
       return res.status(200).json({
         pendingRequests,
@@ -60,8 +77,13 @@ const FriendRequestController = {
   sent: async (req, res) => {
     try {
       const userId = req.params.id
+      const { limit, offset } = req.query
 
-      const sentRequests = await FriendRequestService.sent(userId)
+      const sentRequests = await FriendRequestService.sent({
+        userId,
+        limit: Number.parseInt(limit, 10),
+        offset: Number.parseInt(offset, 10),
+      })
 
       return res.status(200).json({
         sentRequests,

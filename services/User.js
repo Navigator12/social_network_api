@@ -5,14 +5,13 @@ const FriendRelation = require('../models/FriendRelation')
 const { getToken } = require('../utils/Token')
 
 const UserService = {
-  getAllUsers: async () => {
-    const format = {
-      posts: 0,
-      password: 0,
-      __v: 0,
-    }
+  getAllUsers: async (payload) => {
+    const { limit, offset } = payload
 
-    const users = await User.find({}, format)
+    const users = await User
+      .find({}, '_id nickname date')
+      .skip(offset)
+      .limit(limit)
 
     return users
   },
@@ -20,13 +19,8 @@ const UserService = {
   getUserById: async (payload) => {
     const id = payload
 
-    const format = {
-      password: 0,
-      __v: 0,
-      posts: 0,
-    }
-
-    const user = await User.findById(id, format)
+    const user = await User
+      .findById(id, '_id nickname date')
 
     return user
   },
@@ -34,21 +28,18 @@ const UserService = {
   getUserByIdWithPosts: async (payload) => {
     const id = payload
 
-    const format = {
-      password: 0,
-      __v: 0,
-    }
-
     const population = {
       path: 'posts',
-      select: '-__v -author',
+      select: '_id text author date comments',
       populate: {
         path: 'comments',
-        select: '-__v',
+        select: '_id text author date',
       },
     }
 
-    const user = await User.findById(id, format).populate(population)
+    const user = await User
+      .findById(id, '_id nickname date posts')
+      .populate(population)
 
     return user
   },
@@ -56,22 +47,19 @@ const UserService = {
   getFriends: async (payload) => {
     const id = payload
 
-    const selectRelation = 'to date'
-    const selectUser = '_id nickname'
-
     const friends = await FriendRelation
       .find({
         from: id,
       })
-      .select(selectRelation)
+      .select('to')
       .populate({
         path: 'to',
-        select: selectUser,
+        select: '_id nickname date',
       })
       .map((relations) => relations.map((rel) => ({
         _id: rel.to._id,
         nickname: rel.to.nickname,
-        date: rel.date,
+        date: rel.to.date,
       })))
 
     return friends
@@ -80,7 +68,8 @@ const UserService = {
   create: async (payload) => {
     const { nickname, password } = payload
 
-    const existingUser = await User.findOne({ nickname })
+    const existingUser = await User
+      .findOne({ nickname })
 
     if (existingUser) throw new Error('User already exists')
 
@@ -97,7 +86,8 @@ const UserService = {
   login: async (payload) => {
     const { nickname, password } = payload
 
-    const user = await User.findOne({ nickname })
+    const user = await User
+      .findOne({ nickname })
 
     if (!user) throw new Error('Incorrect nickname or password')
 
