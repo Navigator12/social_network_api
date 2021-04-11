@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 
 const User = require('../models/User')
+const FriendRequest = require('../models/FriendRequest')
 const FriendRelation = require('../models/FriendRelation')
 const { getToken } = require('../utils/Token')
 
@@ -31,9 +32,18 @@ const UserService = {
     const population = {
       path: 'posts',
       select: '_id text author date comments',
+      options: {
+        sort: {
+          date: -1,
+        },
+      },
       populate: {
         path: 'comments',
         select: '_id text author date',
+        populate: {
+          path: 'author',
+          select: 'nickname',
+        },
       },
     }
 
@@ -63,6 +73,67 @@ const UserService = {
       })))
 
     return friends
+  },
+
+  getFriendStatus: async (payload) => {
+    const { from, to } = payload
+
+    const status = {
+      isFriend: 'isFriend',
+      sentRequest: 'sentRequest',
+      pendingRequest: 'pendingRequest',
+      notFriend: 'notFriend',
+    }
+
+    const isFriend = await FriendRelation.findOne({
+      from,
+      to,
+    })
+    if (isFriend) {
+      return {
+        code: status.isFriend,
+      }
+    }
+
+    const sentRequest = await FriendRequest.findOne({
+      from,
+      to,
+    })
+    if (sentRequest) {
+      return {
+        code: status.sentRequest,
+        requestId: sentRequest._id,
+      }
+    }
+
+    const pendingRequest = await FriendRequest.findOne({
+      from: to,
+      to: from,
+    })
+    if (pendingRequest) {
+      return {
+        code: status.pendingRequest,
+        requestId: pendingRequest._id,
+      }
+    }
+
+    return {
+      code: status.notFriend,
+    }
+  },
+
+  removeFriendRelation: async (payload) => {
+    const { user1, user2 } = payload
+
+    await FriendRelation.findOneAndDelete({
+      from: user1,
+      to: user2,
+    })
+
+    await FriendRelation.findOneAndDelete({
+      from: user2,
+      to: user1,
+    })
   },
 
   create: async (payload) => {

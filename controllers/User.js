@@ -74,6 +74,40 @@ const UserController = {
     }
   },
 
+  friendStatus: async (req, res) => {
+    try {
+      const { from, to } = req.params
+
+      const status = await UserService.getFriendStatus({ from, to })
+
+      return res.status(200).json({
+        status,
+      })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
+  removeFriendRelation: async (req, res) => {
+    try {
+      const { userId } = req.user
+      const { otherUserId } = req.params
+
+      await UserService.removeFriendRelation({
+        user1: userId,
+        user2: otherUserId,
+      })
+
+      return res.status(204).json({})
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
   register: async (req, res) => {
     try {
       await UserService.create(req.body)
