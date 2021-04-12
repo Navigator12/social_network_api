@@ -39,6 +39,23 @@ const PostController = {
     }
   },
 
+  delete: async (req, res) => {
+    try {
+      const { userId } = req.user
+      const { id } = req.params
+
+      await PostService.delete({ userId, postId: id })
+
+      return res.status(201).json({
+        postId: id,
+      })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
   comment: async (req, res) => {
     try {
       const { userId } = req.user

@@ -8,5 +8,6 @@ const router = Router()
 router.get('/news', AttachUser, PostController.news)
 router.post('/create', AttachUser, PostController.create)
 router.post('/comment', AttachUser, PostController.comment)
+router.delete('/:id', AttachUser, PostController.delete)
 
 module.exports = router

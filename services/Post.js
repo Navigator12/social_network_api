@@ -69,6 +69,25 @@ const PostService = {
     return post
   },
 
+  delete: async (payload) => {
+    const { postId, userId } = payload
+
+    const post = await Post.findOneAndDelete({
+      _id: postId,
+      author: userId,
+    })
+
+    if (!post) {
+      throw new Error('Post does not exist')
+    }
+
+    await Comment.deleteMany({
+      _id: {
+        $in: post.comments,
+      },
+    })
+  },
+
   comment: async (payload) => {
     const { postId, text, author } = payload
 
