@@ -13,6 +13,7 @@ app.use(cors())
 app.use('/api/users', require('./routes/User'))
 app.use('/api/posts', require('./routes/Post'))
 app.use('/api/friend_request', require('./routes/FriendRequest'))
+app.use('/api/chats', require('./routes/Chat'))
 
 const startDB = async () => {
   try {

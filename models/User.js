@@ -22,6 +22,11 @@ const userSchema = new Schema({
     type: Types.ObjectId,
     ref: 'Post',
   }],
+
+  chats: [{
+    type: Types.ObjectId,
+    ref: 'Chat',
+  }],
 })
 
 module.exports = model('User', userSchema)
