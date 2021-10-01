@@ -7,9 +7,9 @@ const ChatController = {
 
       const { otherId } = req.body
 
-      await ChatService.create({ from: userId, to: otherId })
+      const chat = await ChatService.create({ from: userId, to: otherId })
 
-      return res.status(201).json({})
+      return res.status(201).json({ chat })
     } catch (e) {
       return res.status(400).json({
         error: e.message,
@@ -25,9 +25,21 @@ const ChatController = {
 
       const chat = await ChatService.find({ userId, otherId })
 
-      if (!chat) return res.status(404).json({})
-
       return res.status(200).json({ chat })
+    } catch (e) {
+      return res.status(400).json({
+        error: e.message,
+      })
+    }
+  },
+
+  getUserChats: async (req, res) => {
+    try {
+      const { userId } = req.user
+
+      const chats = await ChatService.getUserChats(userId)
+
+      return res.status(200).json({ chats })
     } catch (e) {
       return res.status(400).json({
         error: e.message,
@@ -51,17 +63,17 @@ const ChatController = {
     }
   },
 
-  getMessages: async (req, res) => {
+  getChatWithMessages: async (req, res) => {
     try {
       const { userId } = req.user
 
-      const { chatId } = req.params
+      const { otherId } = req.params
 
-      const chat = await ChatService.getChatWithMessages({ userId, chatId })
+      const chat = await ChatService.getChatWithMessages({ userId, otherId })
 
       if (!chat) return res.status(404).json({})
 
-      return res.status(200).json({ messages: chat.messages })
+      return res.status(200).json({ chat })
     } catch (e) {
       return res.status(400).json({
         error: e.message,

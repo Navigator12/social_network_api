@@ -1,11 +1,18 @@
 const express = require('express')
+const http = require('http')
 const mongoose = require('mongoose')
 const cors = require('cors')
 require('dotenv').config()
 
+const Socket = require('./socket')
+const listenSocketEvents = require('./events')
+
 const { PORT, MONGO } = process.env
 
 const app = express()
+const server = http.createServer(app)
+
+Socket.initialize(server)
 
 app.use(express.json({ extended: true }))
 app.use(cors())
@@ -30,5 +37,7 @@ const startDB = async () => {
 
 startDB().then(() => {
   console.log('Successfully connected to DB')
-  app.listen(PORT, () => console.log(`App has been started on port ${PORT}`))
+  server.listen(PORT, () => console.log(`App has been started on port ${PORT}`))
+
+  listenSocketEvents()
 })
